@@ -58,7 +58,7 @@ public class MainGUI extends JFrame implements ActionListener, ItemListener {
 
 		MantisConnectLocator loc = new MantisConnectLocator();
 		try {
-			//loc.setMantisConnectPortEndpointAddress("http://localhost/~philip/bugtracker/api/soap/mantisconnect.php");
+			loc.setMantisConnectPortEndpointAddress("http://localhost/~philip/bugtracker/api/soap/mantisconnect.php");
 			service = loc.getMantisConnectPort();
 
 			projects = service.mc_projects_get_user_accessible(USER, PWD);
