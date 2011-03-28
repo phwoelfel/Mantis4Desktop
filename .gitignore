@@ -1,0 +1,4 @@
+workspace/*/bin/
+*~*
+workspace/.metadata/
+workspace/*/gen/
