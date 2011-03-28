@@ -50,5 +50,23 @@ public class MantisTableModel extends AbstractTableModel {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+		// TODO Auto-generated method stub
+		super.setValueAt(aValue, rowIndex, columnIndex);
+	}
+	
+	@Override
+	public String getColumnName(int column) {
+		// TODO Auto-generated method stub
+		return super.getColumnName(column);
+	}
+	
+	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		// TODO Auto-generated method stub
+		return super.getColumnClass(columnIndex);
+	}
 
 }
