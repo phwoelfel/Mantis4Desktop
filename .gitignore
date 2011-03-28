@@ -1,5 +1,5 @@
 *~*
-workspace/*/bin/
-workspace/*/build/
-workspace/.metadata/
-workspace/*/gen/
+/bin/
+/build/
+.metadata/
+/gen/
