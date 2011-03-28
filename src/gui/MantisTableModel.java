@@ -4,6 +4,7 @@
 package gui;
 
 import java.math.BigInteger;
+import java.rmi.RemoteException;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -17,20 +18,31 @@ import biz.futureware.mantisconnect.MantisConnectPortType;
 public class MantisTableModel extends AbstractTableModel {
 	private IssueData[] data;
 	private BigInteger projectId;
-	public MantisTableModel(MantisConnectPortType service, String projectId) {
-		this.projectId = new BigInteger(projectId);
+	private MantisConnectPortType service;
+	private static String USER = "apiuser";
+	private static String PWD = "Crp97.zogt";
+	
+	
+	public MantisTableModel(MantisConnectPortType service, BigInteger projectId, String usr, String pwd) {
+		this.projectId = projectId;
+		this.service = service;
+		USER = usr;
+		PWD = pwd;
+		try {
+			data = service.mc_project_get_issues(USER, PWD, this.projectId, new BigInteger("0"), new BigInteger("0"));
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
 	public int getColumnCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 3;
 	}
 
 	@Override
 	public int getRowCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return data!=null?data.length:0;
 	}
 
 	@Override

@@ -108,9 +108,10 @@ public class MainGUI extends JFrame implements ActionListener, ItemListener {
 	}
 
 	@Override
-	public void itemStateChanged(ItemEvent arg0) {
-		// TODO Auto-generated method stub
-		
+	public void itemStateChanged(ItemEvent ev) {
+		int proj = project_select.getSelectedIndex();
+		ProjectData pdata = projects[proj];
+		tab.setModel(new MantisTableModel(service, pdata.getId(), USER, PWD));
 	}
 
 }
