@@ -9,15 +9,18 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.rmi.RemoteException;
 
+import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.TableColumn;
 import javax.xml.rpc.ServiceException;
 
 import biz.futureware.mantisconnect.MantisConnectLocator;
 import biz.futureware.mantisconnect.MantisConnectPortType;
+import biz.futureware.mantisconnect.ObjectRef;
 import biz.futureware.mantisconnect.ProjectData;
 
 public class MainGUI extends JFrame implements ActionListener, ItemListener {
@@ -30,6 +33,7 @@ public class MainGUI extends JFrame implements ActionListener, ItemListener {
 
 	private MantisConnectPortType service;
 	private ProjectData[] projects;
+	private ObjectRef[] stati;
 
 	/**
 	 * @param args
@@ -62,13 +66,15 @@ public class MainGUI extends JFrame implements ActionListener, ItemListener {
 			service = loc.getMantisConnectPort();
 
 			projects = service.mc_projects_get_user_accessible(USER, PWD);
-			String[] data = new String[projects.length];
-			for (int i = 0; i < projects.length; i++) {
-				ProjectData p = projects[i];
+			String[] data = new String[projects.length + 1];
+			data[0] = "";
+			for (int i = 1; i < projects.length + 1; i++) {
+				ProjectData p = projects[i-1];
 				data[i] = p.getName();
 			}
 			project_select = new JComboBox(data);
 			project_select.addItemListener(this);
+
 		} catch (ServiceException e) {
 			e.printStackTrace();
 		} catch (RemoteException e) {
@@ -113,8 +119,30 @@ public class MainGUI extends JFrame implements ActionListener, ItemListener {
 
 	private void updateTable() {
 		int proj = project_select.getSelectedIndex();
-		ProjectData pdata = projects[proj];
-		tab.setModel(new MantisTableModel(service, pdata.getId(), USER, PWD));
+		if (proj != 0) {
+			ProjectData pdata = projects[proj-1];
+			tab.setModel(new MantisTableModel(service, pdata.getId(), USER, PWD));
+			
+			try {
+				stati = service.mc_enum_status(USER, PWD);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (stati != null) {
+				JComboBox cb = new JComboBox();
+				for (int i = 0; i < stati.length; i++) {
+					cb.addItem(stati[i].getName());
+				}
+				TableColumn tc = tab.getColumnModel().getColumn(MantisTableModel.COL_STATUS);
+				tc.setCellEditor(new DefaultCellEditor(cb));
+				
+				/*TableColumn tc2 = tab.getColumnModel().getColumn(MantisTableModel.COL_DESC);
+				tc2.setCellRenderer(new ColorCell(stati));
+				*/
+				
+			}
+		}
 	}
 
 }

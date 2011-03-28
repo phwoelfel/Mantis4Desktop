@@ -3,9 +3,12 @@
  */
 package gui;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.math.BigInteger;
 import java.rmi.RemoteException;
 
+import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import biz.futureware.mantisconnect.IssueData;
@@ -21,6 +24,11 @@ public class MantisTableModel extends AbstractTableModel {
 	private MantisConnectPortType service;
 	private static String USER = "apiuser";
 	private static String PWD = "Crp97.zogt";
+	
+	public static final int COL_SUMMARY = 0;
+	public static final int COL_STATUS = 1;
+	public static final int COL_DESC = 2;
+	
 
 	public MantisTableModel(MantisConnectPortType service, BigInteger projectId, String usr, String pwd) {
 		this.projectId = projectId;
@@ -48,13 +56,13 @@ public class MantisTableModel extends AbstractTableModel {
 	public Object getValueAt(int row, int col) {
 		IssueData is = data[row];
 		switch (col) {
-			case 0:
+			case COL_SUMMARY:
 				return is.getSummary();
 
-			case 1:
+			case COL_STATUS:
 				return is.getStatus().getName();
 
-			case 2:
+			case COL_DESC:
 				return is.getDescription();
 
 			default:
@@ -62,7 +70,7 @@ public class MantisTableModel extends AbstractTableModel {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public boolean isCellEditable(int arg0, int arg1) {
 		return true;
@@ -72,14 +80,14 @@ public class MantisTableModel extends AbstractTableModel {
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 		IssueData is = data[rowIndex];
 		switch (columnIndex) {
-			case 0:
+			case COL_SUMMARY:
 				is.setSummary((String) aValue);
 				break;
-			case 1:
-				is.getStatus().setName((String)aValue);
-				break;
-			case 2:
-				is.setDescription((String)aValue);
+			case COL_STATUS:
+				//is.getStatus().setName((String) aValue);
+				return;
+			case COL_DESC:
+				is.setDescription((String) aValue);
 				break;
 
 			default:
@@ -95,13 +103,13 @@ public class MantisTableModel extends AbstractTableModel {
 	@Override
 	public String getColumnName(int column) {
 		switch (column) {
-			case 0:
+			case COL_SUMMARY:
 				return "Titel";
 
-			case 1:
+			case COL_STATUS:
 				return "Status";
 
-			case 2:
+			case COL_DESC:
 				return "Beschreibung";
 
 			default:
@@ -112,8 +120,8 @@ public class MantisTableModel extends AbstractTableModel {
 
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
-
-		return super.getColumnClass(columnIndex);
+		return getValueAt(0, columnIndex).getClass();
 	}
-
+	
+	
 }
