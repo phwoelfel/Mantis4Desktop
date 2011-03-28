@@ -12,6 +12,7 @@ import java.rmi.RemoteException;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.xml.rpc.ServiceException;
 
@@ -23,13 +24,13 @@ public class MainGUI extends JFrame implements ActionListener, ItemListener {
 
 	private JTable tab;
 	private JComboBox project_select;
-	
+
 	private static final String USER = "apiuser";
 	private static final String PWD = "Crp97.zogt";
-	
+
 	private MantisConnectPortType service;
 	private ProjectData[] projects;
-	
+
 	/**
 	 * @param args
 	 */
@@ -37,31 +38,29 @@ public class MainGUI extends JFrame implements ActionListener, ItemListener {
 		new MainGUI();
 
 	}
-	
+
 	public MainGUI() {
 		setTitle("Mantis Bugtracker");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(800, 600);
-		
-		//Container Anfang
+		setSize(1200, 600);
+
+		// Container Anfang
 		Container cp = getContentPane();
 		cp.setLayout(new BorderLayout());
-		
+
 		JPanel top = new JPanel();
 		top.setLayout(new FlowLayout());
-		//Container Ende
-		
-		
-		//Initialisierung der Inhalte Anfang
+		// Container Ende
+
+		// Initialisierung der Inhalte Anfang
 		tab = new JTable();
-		
-		
-		
+		tab.setAutoCreateRowSorter(true);
+
 		MantisConnectLocator loc = new MantisConnectLocator();
 		try {
-			loc.setMantisConnectPortEndpointAddress("http://localhost/~philip/bugtracker/api/soap/mantisconnect.php");
+			//loc.setMantisConnectPortEndpointAddress("http://localhost/~philip/bugtracker/api/soap/mantisconnect.php");
 			service = loc.getMantisConnectPort();
-			
+
 			projects = service.mc_projects_get_user_accessible(USER, PWD);
 			String[] data = new String[projects.length];
 			for (int i = 0; i < projects.length; i++) {
@@ -75,26 +74,22 @@ public class MainGUI extends JFrame implements ActionListener, ItemListener {
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		
-		
-		//Initialisierung der Inhalte Ende
-		
-		
-		//Action Listener zu den Inhalten hinzufuegen Anfang
-		
-		//Action Listener zu den Inhalten hinzufuegen Ende
-		
-		
-		//Inhalte zu den JPanel hinzufuegen Anfang
+
+		// Initialisierung der Inhalte Ende
+
+		// Action Listener zu den Inhalten hinzufuegen Anfang
+
+		// Action Listener zu den Inhalten hinzufuegen Ende
+
+		// Inhalte zu den JPanel hinzufuegen Anfang
 		top.add(project_select);
-		//Inhalte zu den JPanel hinzufuegen Ende
-		
-		
-		//JPanel zum Container hinzufuegen Anfang
+		// Inhalte zu den JPanel hinzufuegen Ende
+
+		// JPanel zum Container hinzufuegen Anfang
 		cp.add(top, BorderLayout.NORTH);
-		cp.add(tab, BorderLayout.CENTER);
-		//JPanel zum Container hinzufuegen Ende
-		
+		cp.add(new JScrollPane(tab), BorderLayout.CENTER);
+		// JPanel zum Container hinzufuegen Ende
+
 		setVisible(true);
 
 	}
@@ -102,11 +97,21 @@ public class MainGUI extends JFrame implements ActionListener, ItemListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void itemStateChanged(ItemEvent ev) {
+		Thread th = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				updateTable();
+			}
+		});
+		th.start();
+	}
+
+	private void updateTable() {
 		int proj = project_select.getSelectedIndex();
 		ProjectData pdata = projects[proj];
 		tab.setModel(new MantisTableModel(service, pdata.getId(), USER, PWD));
